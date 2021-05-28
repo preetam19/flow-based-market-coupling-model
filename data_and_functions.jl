@@ -1,21 +1,26 @@
 ### Set path:
 cd("./data")
+df_bus = df_final[1:10,[:BusID,:Latitude,:Longitude,:Zone]]
 
 ### Import data:
-df_bus_load = CSV.read("df_bus_load_added_abroad_final.csv")
-df_bus = CSV.read("df_bus_final.csv")
-df_branch = CSV.read("df_branch_final.csv")
-df_plants = CSV.read("df_gen_final.csv", copycols=true)
-#df_plants = CSV.read("df_gen_final_high_RES.csv", copycols=true)
-incidence = CSV.read("matrix_A_final.csv")
-susceptance = CSV.read("matrix_Bd_final.csv")
+df_bus_load = CSV.read("df_bus_load_added_abroad_final.csv", DataFrame)
+df_bus = CSV.read("df_bus_final.csv", DataFrame)
+df_branch = CSV.read("df_branch_final.csv", DataFrame)
+df_plants = CSV.read("df_gen_final.csv", copycols=true, DataFrame)
+#df_plants = CSV.read("df_gen_final_high_RES.csv", copycols=true, DataFrame)
+incidence = CSV.read("matrix_A_final.csv", DataFrame)
+susceptance = CSV.read("matrix_Bd_final.csv", DataFrame)
+
+df_bus = df_final[1:10,[:BusID,:Latitude,:Longitude,:Zone]]
+df_bus = df_final[1:10,[:BusID,:Latitude,:Longitude,:Zone]]
+
 
 xf_renew = XLSX.readxlsx("data_renew_2015.xlsx")
-df_pv = DataFrame(xf_renew["pv"][:][2:end,:])
+df_pv = DataFrame(xf_renew["pv"][:][2:end,:], :auto)
 rename!(df_pv, Dict(names(df_pv)[i] => Symbol.(xf_renew["pv"][:][1,:])[i] for i = 1:ncol(df_pv)))
-df_wind = DataFrame(xf_renew["onshore"][:][2:end,:])
+df_wind = DataFrame(xf_renew["onshore"][:][2:end,:], :auto)
 rename!(df_wind, Dict(names(df_wind)[i] => Symbol.(xf_renew["onshore"][:][1,:])[i] for i = 1:ncol(df_wind)))
-df_wind_off = DataFrame(xf_renew["offshore"][:][2:end,:])
+df_wind_off = DataFrame(xf_renew["offshore"][:][2:end,:], :auto)
 rename!(df_wind_off, Dict(names(df_wind_off)[i] => Symbol.(xf_renew["offshore"][:][1,:])[i] for i = 1:ncol(df_wind_off)))
 
 # Adjustment of capacities:
@@ -71,8 +76,14 @@ z_to_z = Dict(map(z-> z=> [zz for zz in Z if
 
 ### Calculations and functions:
 ## Susceptance matrices:
-line_sus_mat = convert(Matrix, susceptance)*convert(Matrix, incidence)
-node_sus_mat = transpose(convert(Matrix, incidence))*convert(Matrix, susceptance)*convert(Matrix, incidence)
+
+# line_sus_mat = convert(Matrix, susceptance)*convert(Matrix, incidence)
+# node_sus_mat = transpose(convert(Matrix, incidence))*convert(Matrix, susceptance)*convert(Matrix, incidence)
+susceptance = Matrix(susceptance)
+incidence = Matrix(incidence)
+line_sus_mat = susceptance*incidence
+node_sus_mat = transpose(incidence)* susceptance* incidence
+
 
 function get_line_sus(l,n)
 	return line_sus_mat[findfirst(L .== l), findfirst(N .== n)]
