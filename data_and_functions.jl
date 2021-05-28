@@ -1,6 +1,6 @@
 ### Set path:
 cd("./data")
-df_bus = df_final[1:10,[:BusID,:Latitude,:Longitude,:Zone]]
+
 
 ### Import data:
 df_bus_load = CSV.read("df_bus_load_added_abroad_final.csv", DataFrame)
@@ -11,8 +11,6 @@ df_plants = CSV.read("df_gen_final.csv", copycols=true, DataFrame)
 incidence = CSV.read("matrix_A_final.csv", DataFrame)
 susceptance = CSV.read("matrix_Bd_final.csv", DataFrame)
 
-df_bus = df_final[1:10,[:BusID,:Latitude,:Longitude,:Zone]]
-df_bus = df_final[1:10,[:BusID,:Latitude,:Longitude,:Zone]]
 
 
 xf_renew = XLSX.readxlsx("data_renew_2015.xlsx")
