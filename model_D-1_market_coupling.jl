@@ -1,14 +1,19 @@
 cd("./results/D-2_base_case")
 
-d_2_line_f = convert(Array{Float64,2}, CSV.read(string("df_d_2_line_f.csv")))
-d_2_np = convert(Array{Float64,2}, CSV.read(string("df_d_2_np.csv")))
-d_2_gen = convert(Array{Float64,2}, CSV.read(string("df_d_2_gen.csv")))
-
+# d_2_line_f = convert(Array{Float64,2}, CSV.read(string("df_d_2_line_f.csv")))
+# d_2_np = convert(Array{Float64,2}, CSV.read(string("df_d_2_np.csv")))
+# d_2_gen = convert(Array{Float64,2}, CSV.read(string("df_d_2_gen.csv")))
+d_2_line_f =  CSV.read(string("df_d_2_line_f.csv"), DataFrame)
+d_2_line_f = Array{Float64}(d_2_line_f)
+d_2_np =  CSV.read(string("df_d_2_np.csv"), DataFrame)
+d_2_np = Array{Float64}(d_2_np)
+d_2_gen =  CSV.read(string("df_d_2_gen.csv"), DataFrame)
+d_2_gen = Array{Float64}(d_2_gen)
 cd("..")
 cd("..")
 
 PTDF_Z = PTDF*gsk_mc
-PTDF_Z_CNEC = PTDF_Z[findall(x->x in CNEC, L),:]
+# PTDF_Z_CNEC = PTDF_Z[findall(x->x in CNEC, L),:]
 
 # Create empty matrices to store values
 d_1_curt = zeros(Float64, length(T), length(N))
@@ -77,24 +82,24 @@ for horizon in 1:ceil(Int, length(T)/hours_per_horizon)
 	@constraint(m, net_position_fbmc[t=Tsub],
 	sum(NP[t,z] for z in Z_FBMC) == 0)
 	println("Net positions sum-zero inside of FBMC.")
-
-	@constraint(
-	m, flow_on_cnes_pos[t=Tsub, j=CNEC],
-	sum(PTDF_Z_CNEC[findfirst(CNEC .== j),findfirst(Z_FBMC .== z_fb)]*
-		(NP[t,z_fb]-d_2_np[t,findfirst(Z .== z_fb)]) for z_fb in Z_FBMC)
-	<= get_line_cap(j)*(1-frm)-d_2_line_f[t,findfirst(L .== j)]
-	)
-	println("Flows on CNECs (pos).")
-
-	@constraint(
-	m, flow_on_cnes_neg[t=Tsub, j=CNEC],
-	sum(PTDF_Z_CNEC[findfirst(CNEC .== j),findfirst(Z_FBMC .== z_fb)]*
-		(NP[t,z_fb]-d_2_np[t,findfirst(Z .== z_fb)]) for z_fb in Z_FBMC)
-	>= -get_line_cap(j)*(1-frm)-d_2_line_f[t,findfirst(L .== j)]
-	)
-	println("Flows on CNECs (neg).")
-
-	println("Constraints done.")
+#
+# 	@constraint(
+# 	m, flow_on_cnes_pos[t=Tsub, j=CNEC],
+# 	sum(PTDF_Z_CNEC[findfirst(CNEC .== j),findfirst(Z_FBMC .== z_fb)]*
+# 		(NP[t,z_fb]-d_2_np[t,findfirst(Z .== z_fb)]) for z_fb in Z_FBMC)
+# 	<= get_line_cap(j)*(1-frm)-d_2_line_f[t,findfirst(L .== j)]
+# 	)
+# # 	println("Flows on CNECs (pos).")
+#
+# 	@constraint(
+# 	m, flow_on_cnes_neg[t=Tsub, j=CNEC],
+# 	sum(PTDF_Z_CNEC[findfirst(CNEC .== j),findfirst(Z_FBMC .== z_fb)]*
+# 		(NP[t,z_fb]-d_2_np[t,findfirst(Z .== z_fb)]) for z_fb in Z_FBMC)
+# 	>= -get_line_cap(j)*(1-frm)-d_2_line_f[t,findfirst(L .== j)]
+# 	)
+# 	println("Flows on CNECs (neg).")
+#
+# 	println("Constraints done.")
 
 	status = optimize!(m)
 
