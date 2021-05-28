@@ -16,21 +16,21 @@ end
 z2z_temp_abs = broadcast(abs, z2z_temp)
 maximum_abs_z2z = reshape(findmax(z2z_temp_abs, dims=2)[1], :)
 
-CNEC = L[findall(x->x>=cne_alpha, maximum_abs_z2z)]
-
-if include_cb_lines==true
-	cross_border_line=find_cross_border_lines()
-	cross_border_line[findall(x-> !(x in CNEC), cross_border_line)]
-	CNEC = unique(vcat(CNEC, cross_border_line))
-end
+# CNEC = L[findall(x->x>=cne_alpha, maximum_abs_z2z)]
+#
+# if include_cb_lines==true
+# 	cross_border_line=find_cross_border_lines()
+# 	cross_border_line[findall(x-> !(x in CNEC), cross_border_line)]
+# 	CNEC = unique(vcat(CNEC, cross_border_line))
+# end
 
 # The order in CNEC does not necessarily follow order in L_in_CWE,
 # therefore use CNEC = L[findall(...)]
 
-CNEC = L[findall(x->x in CNEC, L)]
+# CNEC = L[findall(x->x in CNEC, L)]
+#
+# PTDF_CNEC = PTDF[findall(x->x in CNEC, L),:]
+# PTDF_Z_CNEC = PTDF_Z[findall(x->x in CNEC, L),:]
 
-PTDF_CNEC = PTDF[findall(x->x in CNEC, L),:]
-PTDF_Z_CNEC = PTDF_Z[findall(x->x in CNEC, L),:]
-
-println("CNE selection: ",
-		length(CNEC), " CNEs selected at alpha=", cne_alpha)
+# println("CNE selection: ",
+# 		length(CNEC), " CNEs selected at alpha=", cne_alpha)
