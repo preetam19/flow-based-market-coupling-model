@@ -1,5 +1,5 @@
 MWBase = 380^2
-slack_node = 68
+slack_node = 1  # was 68
 slack_position = findfirst(N .== slack_node)
 
 # Build nodal PTDFs
@@ -47,48 +47,7 @@ end
 gsk_flat_unit = get_gsk_flat_unit()
 sum(gsk_flat_unit, dims=1)
 
-function get_gsk_pmax()
-	gsk_temp = zeros(Float64, length(N_FBMC), length(Z_FBMC))
-	for n in N_FBMC
-		zone_temp = df_bus.Zone[df_bus[:,:BusID].==n][1]
-		conv_nodes_in_zone = unique(df_plants.OnBus[[x == zone_temp for x in df_plants[:,:Zone]] .& [x in P for x in df_plants[:,:GenID]]])
-		#conv_units_in_zone = unique(df_plants.GenID[[x == zone_temp for x in df_plants[:,:Zone]] .& [x in P for x in df_plants[:,:GenID]]])
-		if n in conv_nodes_in_zone
-			conv_pmax_in_zone = sum(df_plants.Pmax[[x in conv_nodes_in_zone for x in df_plants[:,:OnBus]] .& [x in P for x in df_plants[:,:GenID]]])
-			conv_pmax_at_node = sum(df_plants.Pmax[[x == n for x in df_plants[:,:OnBus]] .& [x in P for x in df_plants[:,:GenID]]])
-			gsk_value_temp = conv_pmax_at_node/conv_pmax_in_zone
-			gsk_temp[findfirst(N_FBMC .== n), findfirst(Z_FBMC .== zone_temp)] = gsk_value_temp
-		end
-	end
-	return gsk_temp
-end
-
-gsk_pmax = get_gsk_pmax()
-sum(gsk_pmax, dims=1)
-
-function get_gsk_pmax_sub()
-	P_sub = df_plants.GenID[[x in ["Hard Coal", "Gas/CCGT"] for x in df_plants[:,:Type]] .&
-						    [x in Z_FBMC for x in df_plants[:,:Zone]]]
-	gsk_temp = zeros(Float64, length(N_FBMC), length(Z_FBMC))
-	for n in N_FBMC
-		zone_temp = df_bus.Zone[df_bus[:,:BusID].==n][1]
-		conv_nodes_in_zone = unique(df_plants.OnBus[[x == zone_temp for x in df_plants[:,:Zone]] .& [x in P_sub for x in df_plants[:,:GenID]]])
-		#conv_units_in_zone = unique(df_plants.GenID[[x == zone_temp for x in df_plants[:,:Zone]] .& [x in P for x in df_plants[:,:GenID]]])
-		if n in conv_nodes_in_zone
-			conv_pmax_in_zone = sum(df_plants.Pmax[[x in conv_nodes_in_zone for x in df_plants[:,:OnBus]] .& [x in P_sub for x in df_plants[:,:GenID]]])
-			conv_pmax_at_node = sum(df_plants.Pmax[[x == n for x in df_plants[:,:OnBus]] .& [x in P_sub for x in df_plants[:,:GenID]]])
-			gsk_value_temp = conv_pmax_at_node/conv_pmax_in_zone
-			gsk_temp[findfirst(N_FBMC .== n), findfirst(Z_FBMC .== zone_temp)] = gsk_value_temp
-		end
-	end
-	return gsk_temp
-end
-
-gsk_pmax_sub = get_gsk_pmax_sub()
-sum(gsk_pmax_sub, dims=1)
 
 println("All GSKs built, with column sums")
 println("1) GSK flat: ", round.(sum(gsk_flat,dims=1), digits=2))
 println("2) GSK flat unit: ", round.(sum(gsk_flat_unit,dims=1), digits=2))
-println("3) GSK pmax: ", round.(sum(gsk_pmax,dims=1), digits=2))
-println("4) GSK pmax sub: ", round.(sum(gsk_pmax_sub,dims=1), digits=2))
