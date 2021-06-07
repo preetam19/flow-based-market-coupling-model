@@ -13,20 +13,12 @@ xf_renew_new = CSV.read("data_renew.csv", DataFrame)
 
 
 
-# xf_renew = XLSX.readxlsx("data_renew_2015.xlsx")
-# df_pv = DataFrame(xf_renew["pv"][:][2:end,:], :auto)
-# rename!(df_pv, Dict(names(df_pv)[i] => Symbol.(xf_renew["pv"][:][1,:])[i] for i = 1:ncol(df_pv)))
-# df_wind = DataFrame(xf_renew["onshore"][:][2:end,:], :auto)
-# rename!(df_wind, Dict(names(df_wind)[i] => Symbol.(xf_renew["onshore"][:][1,:])[i] for i = 1:ncol(df_wind)))
-# df_wind_off = DataFrame(xf_renew["offshore"][:][2:end,:], :auto)
-# rename!(df_wind_off, Dict(names(df_wind_off)[i] => Symbol.(xf_renew["offshore"][:][1,:])[i] for i = 1:ncol(df_wind_off)))
-
 # Adjustment of capacities:
-df_branch.Pmax = 0.75*df_branch.Pmax
+#df_branch.Pmax = 0.75*df_branch.Pmax
 df_bus.ZoneRes = df_bus.Zone
 
 
-### Sets:
+### Sets:Z_
 ## General sets:
 T = 1:size(df_bus_load,1)
 R = names(xf_renew_new)[3:end]
@@ -50,13 +42,15 @@ df_plants.Zone = replaced_zones()
 
 ## Flow-based sets:
 Z_FBMC = Z[(length(Z)-2):length(Z)]
-N_FBMC = df_bus.BusID[[!(x in Z_FBMC) for x in df_bus[:,:Zone]]]
+N_FBMC = df_bus.BusID[[x in Z_FBMC for x in df_bus[:,:Zone]]]
+
  Z_not_in_FBMC = Z[1:(length(Z)-3)]
 # Z_not_in_FBMC = Z[(length(Z)-2):length(Z)]
- N_not_in_FBMC = df_bus.BusID[[x in Z_FBMC for x in df_bus[:,:Zone]]]
+ N_not_in_FBMC = df_bus.BusID[[!(x in Z_FBMC) for x in df_bus[:,:Zone]]]
+
 # N_not_in_FBMC = df_bus.BusID[[!(x in Z_FBMC) for x in df_bus[:,:Zone]]]
 Z_FBMC = Z[(length(Z)-2):length(Z)]
-N_FBMC = df_bus.BusID[[!(x in Z_FBMC) for x in df_bus[:,:Zone]]]
+N_FBMC = df_bus.BusID[[x in Z_FBMC for x in df_bus[:,:Zone]]]
 
 ## Redispatch:
 P_RD = df_plants.GenID[[x in ["Oil", "Natural gas",  "Biomass" ,"Coal"] for x in df_plants[:,:Type]]]
@@ -213,3 +207,4 @@ function find_cross_border_lines()
 end
 
 cd("..")
+
