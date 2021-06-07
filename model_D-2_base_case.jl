@@ -87,16 +87,16 @@ for horizon in 1:ceil(Int, length(T)/hours_per_horizon)
 	@constraint(m, line_cap_neg[t=Tsub, l=L], LINE_F[t,l] >= -get_line_cap(l))
 	println("Built constraints line_cap_neg.")
 
-	#@constraint(m, line_cap_pos_cnec[t=Tsub, l=CNEC],
-	#LINE_F[t,l] <= get_line_cap(l)*(1-frm))
-	#println("Built constraints line_cap_pos for CNECs.")
+	@constraint(m, line_cap_pos_cnec[t=Tsub, l=CNEC],
+	LINE_F[t,l] <= get_line_cap(l)*(1-frm))
+	println("Built constraints line_cap_pos for CNECs.")
 
-	#@constraint(m, line_cap_neg_cnec[t=Tsub, l=CNEC],
-	#LINE_F[t,l] >= -get_line_cap(l)*(1-frm))
-	#println("Built constraints line_cap_neg for CNECs.")
+	@constraint(m, line_cap_neg_cnec[t=Tsub, l=CNEC],
+	LINE_F[t,l] >= -get_line_cap(l)*(1-frm))
+	println("Built constraints line_cap_neg for CNECs.")
 
 	for t in Tsub
-		JuMP.fix(DELTA[t,1], 0)
+		JuMP.fix(DELTA[t,slack_node], 0)
 	end
 	println("Built constraints FIX SLACK NODE.")
 
