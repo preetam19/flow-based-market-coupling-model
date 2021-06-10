@@ -63,8 +63,6 @@ P_RD = df_plants.GenID[[x in ["Oil", "Natural gas",  "Biomass" ,"Coal"] for x in
 ### Calculations and functions:
 ## Susceptance matrices:
 
-# line_sus_mat = convert(Matrix, susceptance)*convert(Matrix, incidence)
-# node_sus_mat = transpose(convert(Matrix, incidence))*convert(Matrix, susceptance)*convert(Matrix, incidence)
 susceptance = Matrix(susceptance)
 incidence = Matrix(incidence)
 line_sus_mat = susceptance*incidence
