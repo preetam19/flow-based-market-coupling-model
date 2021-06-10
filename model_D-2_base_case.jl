@@ -7,7 +7,6 @@ d_2_gen_costs = zeros(Float64, length(T), length(Z))
 d_2_curt_costs = zeros(Float64, length(T), length(Z))
 d_2_nodal_price = zeros(Float64, length(T), length(N))
 d_2_np = zeros(Float64, length(T), length(Z_FBMC))
-#d_2_export = zeros(Float64, length(T), length(Z_not_in_FBMC))
 
 max_mc = find_maximum_mc()
 cost_curt = ceil(max_mc)
@@ -48,9 +47,6 @@ for horizon in 1:ceil(Int, length(T)/hours_per_horizon)
 	get_dem(t,n))
 	println("Built constraints nodal_balance.")
 
-	#@constraint(m, export_balance_abroad[t=Tsub, z=Z_not_in_FBMC],
-	#EXPORT[t,z] == sum(NOD_INJ[t,n] for n in n_in_z[z]))
-	#println("Export balance outside of FBMC.")
 
 	@constraint(m, net_positions[t=Tsub, z=Z_FBMC],
 	NP[t,z] == sum(NOD_INJ[t,n] for n in n_in_z[z]) +
@@ -62,16 +58,6 @@ for horizon in 1:ceil(Int, length(T)/hours_per_horizon)
 		println("No trade condition (within FBMC).")
 	end
 
-	#if exports_abroad_0 == true
-	#	@constraint(m, no_trade_base_case_abroad[t=Tsub, z=Z_not_in_FBMC], EXPORT[t,z] == 0)
-	#	println("No trade condition (within FBMC).")
-	#end
-
-	#@constraint(m, trade_limit_base_case_pos[t=Tsub, z=Z_not_in_FBMC], EXPORT[t,z] <= max_ntc)
-	#println("Trade limit pos. (outside FBMC).")
-
-	#@constraint(m, trade_limit_base_case_neg[t=Tsub, z=Z_not_in_FBMC], EXPORT[t,z] >= -max_ntc)
-	#println("Trade limit neg. (outside FBMC).")
 
 	@constraint(m, nodal_injection[t=Tsub, n=N],
 	NOD_INJ[t,n] == sum(B_mat[n,nn]*DELTA[t,nn] for nn in N))
@@ -118,4 +104,8 @@ for horizon in 1:ceil(Int, length(T)/hours_per_horizon)
 	m = nothing
 end
 
-include("export_D-2_results.jl")
+if nodal_analysis == true
+	include("nodal_analysis_results.jl")
+	else
+	include("export_D-2_results.jl")
+end
