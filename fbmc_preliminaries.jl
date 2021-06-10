@@ -1,5 +1,5 @@
-MWBase = 380^2
-slack_node = 68
+MWBase = 138^2 # init: 380
+slack_node = 1  # was 68
 slack_position = findfirst(N .== slack_node)
 
 # Build nodal PTDFs
@@ -9,13 +9,20 @@ node_sus_mat = transpose(convert(Matrix, incidence))*convert(Matrix, susceptance
 line_sus_mat_ = line_sus_mat[:, 1:end .!= slack_position]
 node_sus_mat_ = node_sus_mat[1:end .!= slack_position, 1:end .!= slack_position]
 
+#println(line_sus_mat)
+#println(node_sus_mat)
+
 PTDF = line_sus_mat_*inv(node_sus_mat_)
+#println(PTDF)
 zero_column = zeros(Float64, length(L), 1)
 PTDF = hcat(PTDF[:,1:(slack_position-1)], zero_column, PTDF[:,slack_position:end])
+#println(PTDF)
 
 PTDF = PTDF[:,findall(x->x in N_FBMC, N)]
 
+
 println("Nodal PTDF built.")
+#println(PTDF)
 
 # Build flat GSK
 function get_gsk_flat()
@@ -46,6 +53,7 @@ end
 
 gsk_flat_unit = get_gsk_flat_unit()
 sum(gsk_flat_unit, dims=1)
+
 
 function get_gsk_pmax()
 	gsk_temp = zeros(Float64, length(N_FBMC), length(Z_FBMC))

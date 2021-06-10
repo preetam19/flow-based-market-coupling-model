@@ -5,7 +5,7 @@ using JuMP
 using Statistics
 using Plots
 using DataFrames
-
+import Pkg
 ## LOAD DATA, FUNCTIONS, COMPUTE PRELIMINARIES
 #cd("...") #may have to change
 include("data_and_functions.jl")
@@ -25,8 +25,8 @@ max_ntc = 1000
 cost_curt_mc = 0
 np_within_fbmc_0 = false
 exports_abroad_0 = true
-
-## MODELING
+#
+# ## MODELING
 include("model_D-2_base_case.jl")
 include("model_D-1_market_coupling.jl")
 include("model_D-0_congestion_management.jl")

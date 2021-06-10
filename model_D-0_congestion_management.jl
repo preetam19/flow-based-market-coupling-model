@@ -1,10 +1,17 @@
 cd("./results/D-1_market_coupling")
 
-d_1_curt = convert(Array{Float64,2}, CSV.read(string("df_d_1_curt.csv")))
-d_1_gen = convert(Array{Float64,2}, CSV.read(string("df_d_1_gen.csv")))
-d_1_gen_costs = convert(Array{Float64,2}, CSV.read(string("df_d_1_gen_costs.csv")))
-d_1_nodal_price= convert(Array{Float64,2}, CSV.read(string("df_d_1_nodal_price.csv")))
-
+# d_1_curt = convert(Array{Float64,2}, CSV.read(string("df_d_1_curt.csv")))
+# d_1_gen = convert(Array{Float64,2}, CSV.read(string("df_d_1_gen.csv")))
+# d_1_gen_costs = convert(Array{Float64,2}, CSV.read(string("df_d_1_gen_costs.csv")))
+# d_1_nodal_price= convert(Array{Float64,2}, CSV.read(string("df_d_1_nodal_price.csv")))
+d_1_curt =  CSV.read(string("df_d_1_curt.csv"), DataFrame)
+d_1_curt = Array{Float64,2}(d_1_curt)
+d_1_gen =  CSV.read(string("df_d_1_gen.csv"), DataFrame)
+d_1_gen = Array{Float64}(d_1_gen)
+d_1_gen_costs =  CSV.read(string("df_d_1_gen_costs.csv"), DataFrame)
+d_1_gen_costs = Array{Float64}(d_1_gen_costs)
+d_1_nodal_price =  CSV.read(string("df_d_1_nodal_price.csv"), DataFrame)
+d_1_nodal_price = Array{Float64}(d_1_nodal_price)
 cd("..")
 cd("..")
 
@@ -54,6 +61,7 @@ for horizon in 1:ceil(Int, length(T)/hours_per_horizon)
     sum(sum(RD_POS[t,p]*get_mc(p) for p in p_rd_at_n[n]) for n in n_in_z[z])
     == GEN_COSTS_RD_POS[t,z])
     println("Built constraints costs_gen_rd_pos.")
+
 
 	@constraint(m, costs_gen_rd_neg[t=Tsub, z=Z],
     sum(sum(RD_NEG[t,p]*get_mc(p) for p in p_rd_at_n[n]) for n in n_in_z[z])
