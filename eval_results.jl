@@ -1,6 +1,5 @@
 cd("./results/D-1_market_coupling")
-# d_1_gen_costs = convert(Array{Float64,2}, CSV.read(string("df_d_1_gen_costs.csv")))
-# d_1_nodal_price= convert(Array{Float64,2}, CSV.read(string("df_d_1_nodal_price.csv")))
+
 d_1_gen_costs =  CSV.read(string("df_d_1_gen_costs.csv"), DataFrame)
 d_1_gen_costs = Array{Float64,2}(d_1_gen_costs)
 d_1_nodal_price =  CSV.read(string("df_d_1_nodal_price.csv"), DataFrame)
@@ -9,10 +8,6 @@ cd("..")
 cd("..")
 
 cd("./results/D-0_congestion_management")
-# d_0_curt = convert(Array{Float64,2}, CSV.read(string("df_d_0_curt.csv")))
-# d_0_rd_pos = convert(Array{Float64,2}, CSV.read(string("df_d_0_rd_pos.csv")))
-# d_0_rd_neg = convert(Array{Float64,2}, CSV.read(string("df_d_0_rd_neg.csv")))
-# d_0_redispatch_costs = convert(Array{Float64,2}, CSV.read(string("df_d_0_redispatch_costs.csv")))
 d_0_curt =  CSV.read(string("df_d_0_curt.csv"), DataFrame)
 d_0_curt = Array{Float64,2}(d_0_curt)
 d_0_rd_pos =  CSV.read(string("df_d_0_rd_pos.csv"), DataFrame)

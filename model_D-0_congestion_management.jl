@@ -1,9 +1,5 @@
 cd("./results/D-1_market_coupling")
 
-# d_1_curt = convert(Array{Float64,2}, CSV.read(string("df_d_1_curt.csv")))
-# d_1_gen = convert(Array{Float64,2}, CSV.read(string("df_d_1_gen.csv")))
-# d_1_gen_costs = convert(Array{Float64,2}, CSV.read(string("df_d_1_gen_costs.csv")))
-# d_1_nodal_price= convert(Array{Float64,2}, CSV.read(string("df_d_1_nodal_price.csv")))
 d_1_curt =  CSV.read(string("df_d_1_curt.csv"), DataFrame)
 d_1_curt = Array{Float64,2}(d_1_curt)
 d_1_gen =  CSV.read(string("df_d_1_gen.csv"), DataFrame)
@@ -110,7 +106,7 @@ for horizon in 1:ceil(Int, length(T)/hours_per_horizon)
     println("Built constraints line_cap_neg.")
 
 	for t in Tsub
-		JuMP.fix(DELTA[t,68], 0)
+		JuMP.fix(DELTA[t,1], 0)
 	end
 	println("Built constraints FIX SLACK NODE.")
 

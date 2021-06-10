@@ -105,7 +105,7 @@ for horizon in 1:ceil(Int, length(T)/hours_per_horizon)
 end
 
 if nodal_analysis == true
-	include("nodal_analysis_results.jl")
+	include("export_nodal_analysis_results.jl")
 	else
 	include("export_D-2_results.jl")
 end

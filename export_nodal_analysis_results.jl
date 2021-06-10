@@ -1,4 +1,4 @@
-cd("./results/D-2_base_case")
+cd("./results/nodal_analysis")
 
 df_d_2_curt = DataFrame(d_2_curt, :auto)
 rename!(df_d_2_curt, Dict(names(df_d_2_curt)[i] => Symbol.(N)[i] for i = 1:ncol(df_d_2_curt)))
@@ -31,4 +31,4 @@ CSV.write(string("df_d_2_np.csv"), df_d_2_np)
 
 cd("..")
 cd("..")
-println("Saved D-2 base case results.")
+println("Saved Nodal Analysis results.")
