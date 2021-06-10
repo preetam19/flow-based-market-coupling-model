@@ -14,7 +14,6 @@ xf_renew_new = CSV.read("data_renew.csv", DataFrame)
 
 
 # Adjustment of capacities:
-#df_branch.Pmax = 0.75*df_branch.Pmax
 df_bus.ZoneRes = df_bus.Zone
 
 
@@ -41,17 +40,11 @@ end
 df_plants.Zone = replaced_zones()
 
 ## Flow-based sets:
+
 Z_FBMC = Z[(length(Z)-2):length(Z)]
 N_FBMC = df_bus.BusID[[x in Z_FBMC for x in df_bus[:,:Zone]]]
-
- Z_not_in_FBMC = Z[1:(length(Z)-3)]
-# Z_not_in_FBMC = Z[(length(Z)-2):length(Z)]
+Z_not_in_FBMC = Z[1:(length(Z)-3)]
  N_not_in_FBMC = df_bus.BusID[[!(x in Z_FBMC) for x in df_bus[:,:Zone]]]
-
-# N_not_in_FBMC = df_bus.BusID[[!(x in Z_FBMC) for x in df_bus[:,:Zone]]]
-Z_FBMC = Z[(length(Z)-2):length(Z)]
-N_FBMC = df_bus.BusID[[x in Z_FBMC for x in df_bus[:,:Zone]]]
-
 ## Redispatch:
 P_RD = df_plants.GenID[[x in ["Oil", "Natural gas",  "Biomass" ,"Coal"] for x in df_plants[:,:Type]]]
 
@@ -114,31 +107,6 @@ function get_dem(t,n)
 end
 
 ## Renewables:
-# function create_res_table()
-# 	res_temp = zeros(Float64, length(T), length(N), length(R))
-# 	for n in N, r in R
-# 		zone_temp = df_bus.ZoneRes[df_bus[:,:BusID].==n][1]
-# 		cap_temp = sum(df_plants.Pmax[(df_plants[:,:Type].==r) .&
-# 		                              (df_plants[:,:OnBus].==n)])
-# 		if r == "PV"
-# 			share_temp = df_pv[:,Symbol.(zone_temp)]
-# 		elseif r == "Wind"
-# 			share_temp = df_wind[:,Symbol.(zone_temp)]
-# 		else
-# 			share_temp = df_wind_off[:,Symbol.(zone_temp)]
-# 		end
-# 		res_temp[:, findfirst(N .== n), findfirst(R .== r)] = cap_temp*share_temp
-# 	end
-# 	return for i in (R)
-#     return df_plants[df_plants[:,:GenID].==i,:]
-# end
-# end
-#
-# res_table = create_res_table()
-#
-# function get_renew(t,n)
-# 	return sum(res_table[findfirst(T .== t), findfirst(N .== n), findfirst(R .== r)] for r in R)
-# end
 function create_res_table()
     res_temp = zeros(Float64, length(T),length(N))
     ren_temp_pv = zeros(Float64, length(T))
@@ -207,4 +175,3 @@ function find_cross_border_lines()
 end
 
 cd("..")
-

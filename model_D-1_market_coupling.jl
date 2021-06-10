@@ -82,24 +82,24 @@ for horizon in 1:ceil(Int, length(T)/hours_per_horizon)
 	@constraint(m, net_position_fbmc[t=Tsub],
 	sum(NP[t,z] for z in Z_FBMC) == 0)
 	println("Net positions sum-zero inside of FBMC.")
-#
-# 	@constraint(
-# 	m, flow_on_cnes_pos[t=Tsub, j=CNEC],
-# 	sum(PTDF_Z_CNEC[findfirst(CNEC .== j),findfirst(Z_FBMC .== z_fb)]*
-# 		(NP[t,z_fb]-d_2_np[t,findfirst(Z .== z_fb)]) for z_fb in Z_FBMC)
-# 	<= get_line_cap(j)*(1-frm)-d_2_line_f[t,findfirst(L .== j)]
-# 	)
-# # 	println("Flows on CNECs (pos).")
-#
-# 	@constraint(
-# 	m, flow_on_cnes_neg[t=Tsub, j=CNEC],
-# 	sum(PTDF_Z_CNEC[findfirst(CNEC .== j),findfirst(Z_FBMC .== z_fb)]*
-# 		(NP[t,z_fb]-d_2_np[t,findfirst(Z .== z_fb)]) for z_fb in Z_FBMC)
-# 	>= -get_line_cap(j)*(1-frm)-d_2_line_f[t,findfirst(L .== j)]
-# 	)
-# 	println("Flows on CNECs (neg).")
-#
-# 	println("Constraints done.")
+
+ 	@constraint(
+ 	m, flow_on_cnes_pos[t=Tsub, j=CNEC],
+	sum(PTDF_Z_CNEC[findfirst(CNEC .== j),findfirst(Z_FBMC .== z_fb)]*
+ 		(NP[t,z_fb]-d_2_np[t,findfirst(Z .== z_fb)]) for z_fb in Z_FBMC)
+ 	<= get_line_cap(j)*(1-frm)-d_2_line_f[t,findfirst(L .== j)]
+ 	)
+	println("Flows on CNECs (pos).")
+
+	@constraint(
+	m, flow_on_cnes_neg[t=Tsub, j=CNEC],
+	sum(PTDF_Z_CNEC[findfirst(CNEC .== j),findfirst(Z_FBMC .== z_fb)]*
+ 		(NP[t,z_fb]-d_2_np[t,findfirst(Z .== z_fb)]) for z_fb in Z_FBMC)
+ 	>= -get_line_cap(j)*(1-frm)-d_2_line_f[t,findfirst(L .== j)]
+ 	)
+ 	println("Flows on CNECs (neg).")
+
+ 	println("Constraints done.")
 
 	status = optimize!(m)
 
