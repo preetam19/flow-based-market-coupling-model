@@ -1,13 +1,14 @@
-cd("./results/D-1_market_coupling")
+cd("./results/D-1_market_coupling/FBMC")
 
-d_1_curt =  CSV.read(string("df_d_1_curt.csv"), DataFrame)
-d_1_curt = Array{Float64,2}(d_1_curt)
-d_1_gen =  CSV.read(string("df_d_1_gen.csv"), DataFrame)
-d_1_gen = Array{Float64}(d_1_gen)
-d_1_gen_costs =  CSV.read(string("df_d_1_gen_costs.csv"), DataFrame)
-d_1_gen_costs = Array{Float64}(d_1_gen_costs)
-d_1_nodal_price =  CSV.read(string("df_d_1_nodal_price.csv"), DataFrame)
-d_1_nodal_price = Array{Float64}(d_1_nodal_price)
+d_1_fbmc_curt =  CSV.read(string("df_d_1_fbmc_curt.csv"), DataFrame)
+d_1_fbmc_curt = Array{Float64,2}(d_1_fbmc_curt)
+d_1_fbmc_gen =  CSV.read(string("df_d_1_fbmc_gen.csv"), DataFrame)
+d_1_fbmc_gen = Array{Float64}(d_1_fbmc_gen)
+d_1_fbmc_gen_costs =  CSV.read(string("df_d_1_fbmc_gen_costs.csv"), DataFrame)
+d_1_fbmc_gen_costs = Array{Float64}(d_1_fbmc_gen_costs)
+d_1_fbmc_zonal_price =  CSV.read(string("df_d_1_fbmc_zonal_price.csv"), DataFrame)
+d_1_fbmc_zonal_price = Array{Float64}(d_1_fbmc_zonal_price)
+cd("..")
 cd("..")
 cd("..")
 
@@ -36,12 +37,12 @@ for horizon in 1:ceil(Int, length(T)/hours_per_horizon)
 
 	m = Model(Gurobi.Optimizer)
 
-	@variable(m, -d_1_curt[t,findfirst(N .== n)] <= CURT_RD[t in Tsub, n in N] <= get_renew(t,n) - d_1_curt[t,findfirst(N .== n)])
+	@variable(m, -d_1_fbmc_curt[t,findfirst(N .== n)] <= CURT_RD[t in Tsub, n in N] <= get_renew(t,n) - d_1_fbmc_curt[t,findfirst(N .== n)])
 	@variable(m, DELTA[t in Tsub, n in N])
 	@variable(m, NOD_INJ[t in Tsub, n in N])
 	@variable(m, LINE_F[t in Tsub, l in L])
-	@variable(m, 0 <= RD_POS[t in Tsub, p in P_RD] <= get_gen_up(p) - d_1_gen[t,findfirst(P .== p)])
-	@variable(m, 0 <= RD_NEG[t in Tsub, p in P_RD] <= d_1_gen[t,findfirst(P .== p)])
+	@variable(m, 0 <= RD_POS[t in Tsub, p in P_RD] <= get_gen_up(p) - d_1_fbmc_gen[t,findfirst(P .== p)])
+	@variable(m, 0 <= RD_NEG[t in Tsub, p in P_RD] <= d_1_fbmc_gen[t,findfirst(P .== p)])
 	@variable(m, GEN_COSTS_RD_POS[t in Tsub, z in Z])
 	@variable(m, GEN_COSTS_RD_NEG[t in Tsub, z in Z])
 	@variable(m, REDISPATCH_COSTS[t in Tsub, z in Z])
@@ -80,12 +81,12 @@ for horizon in 1:ceil(Int, length(T)/hours_per_horizon)
 	#get_line_cap(1)
 
     @constraint(m, nodal_balance[t=Tsub, n=N],
-    sum(d_1_gen[t,findfirst(P .== p)] for p in p_at_n[n])
+    sum(d_1_fbmc_gen[t,findfirst(P .== p)] for p in p_at_n[n])
     + sum(RD_POS[t,p] for p in p_rd_at_n[n])
     - sum(RD_NEG[t,p] for p in p_rd_at_n[n])
     - NOD_INJ[t,n]
     + get_renew(t,n)
-    - d_1_curt[t,findfirst(N .== n)]
+    - d_1_fbmc_curt[t,findfirst(N .== n)]
     - CURT_RD[t,n]
     ==
     get_dem(t,n))
