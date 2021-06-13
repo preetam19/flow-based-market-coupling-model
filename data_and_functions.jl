@@ -2,14 +2,13 @@
 cd("./data")
 
 ### Import data:
-df_bus_load = CSV.read("df_bus_load_added_abroad_final.csv", DataFrame)
-df_bus = CSV.read("df_bus_new.csv", DataFrame)
+df_bus_load = CSV.read("df_bus_load_final.csv", DataFrame)
+df_bus = CSV.read("df_bus_final.csv", DataFrame)
 df_branch = CSV.read("df_branch_final.csv", DataFrame)
 df_plants = CSV.read("df_gen_final.csv", copycols=true, DataFrame)
-#df_plants = CSV.read("df_gen_final_high_RES.csv", copycols=true, DataFrame)
 incidence = CSV.read("matrix_A_final.csv", DataFrame)
 susceptance = CSV.read("matrix_Bd_final.csv", DataFrame)
-xf_renew_new = CSV.read("data_renew.csv", DataFrame)
+df_renew = CSV.read("df_renew_final.csv", DataFrame)
 
 
 
@@ -20,7 +19,7 @@ df_bus.ZoneRes = df_bus.Zone
 ### Sets:Z_
 ## General sets:
 T = 1:size(df_bus_load,1)
-R = names(xf_renew_new)[3:end]
+R = ("Solar", "Wind")
 P = df_plants.GenID[[!(x in R) for x in df_plants[:,:Type]]]
 N = df_bus[:,:BusID]
 L = df_branch[:,:BranchID]
@@ -37,16 +36,16 @@ function replaced_zones()
 	return zone_p_new
 end
 
-df_plants.Zone = replaced_zones()
+#df_plants.Zone = replaced_zones()
 
 ## Flow-based sets:
 
 Z_FBMC = Z[(length(Z)-2):length(Z)]
 N_FBMC = df_bus.BusID[[x in Z_FBMC for x in df_bus[:,:Zone]]]
-Z_not_in_FBMC = Z[1:(length(Z)-3)]
- N_not_in_FBMC = df_bus.BusID[[!(x in Z_FBMC) for x in df_bus[:,:Zone]]]
+#Z_not_in_FBMC = Z[1:(length(Z)-3)]
+#N_not_in_FBMC = df_bus.BusID[[!(x in Z_FBMC) for x in df_bus[:,:Zone]]]
 ## Redispatch:
-P_RD = df_plants.GenID[[x in ["Oil", "Natural gas",  "Biomass" ,"Coal"] for x in df_plants[:,:Type]]]
+P_RD = df_plants.GenID[[x in ["CCGT", "Hard Coal", "Gas", "Lignite"] for x in df_plants[:,:Type]]]	# Lignite redispatchable?
 
 ## Mapping:
  n_in_z = Dict(map(z -> z => [n for n in N if df_bus[df_bus[:,:BusID].==n, :Zone][1] == z], Z))
@@ -109,7 +108,6 @@ function create_res_table()
     res_temp = zeros(Float64, length(T),length(N))
     ren_temp_pv = zeros(Float64, length(T))
     ren_temp_wind = zeros(Float64, length(T))
-    ren_temp_hydro = zeros(Float64, length(T))
 
     for n in N
 
@@ -125,19 +123,17 @@ function create_res_table()
             end
             ren_temp = ren_temp[:,2:end]
 
-            if r == "solar"
+            if r == "Solar"
                 ren_temp_pv = sum(ren_temp[:,i] for i in 1:size(ren_temp,2))
             elseif r == "Wind"
                 ren_temp_wind = sum(ren_temp[:,i] for i in 1:size(ren_temp,2))
-            else
-                ren_temp_hydro = sum(ren_temp[:,i] for i in 1:size(ren_temp,2))
             end
         end
-        res_temp[:, findfirst(N.==n)] = ren_temp_pv + ren_temp_wind + ren_temp_hydro
+        res_temp[:, findfirst(N.==n)] = ren_temp_pv + ren_temp_wind
 
         ren_temp_pv = zeros(Float64, length(T))
         ren_temp_wind = zeros(Float64, length(T))
-        ren_temp_hydro = zeros(Float64, length(T))
+        
     end
     return res_temp
 end
