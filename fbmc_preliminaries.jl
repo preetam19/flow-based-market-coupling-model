@@ -1,5 +1,5 @@
-MWBase = 380^2 #
-slack_node = 67  # Bus with 1600 MW base capacity
+MWBase = 380^2 # init: 380
+slack_node = 1  # was 68
 slack_position = findfirst(N .== slack_node)
 
 # Build nodal PTDFs
@@ -75,7 +75,7 @@ gsk_pmax = get_gsk_pmax()
 sum(gsk_pmax, dims=1)
 
 function get_gsk_pmax_sub()
-	P_sub = df_plants.GenID[[x in ["Hard Coal", "Gas", "CCGT"] for x in df_plants[:,:Type]] .&
+	P_sub = df_plants.GenID[[x in ["Hard Coal", "Gas/CCGT"] for x in df_plants[:,:Type]] .&
 						    [x in Z_FBMC for x in df_plants[:,:Zone]]]
 	gsk_temp = zeros(Float64, length(N_FBMC), length(Z_FBMC))
 	for n in N_FBMC

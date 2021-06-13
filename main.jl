@@ -13,8 +13,8 @@ include("fbmc_preliminaries.jl")
 ## PARAMETER CHOICES
 # Flow-based preliminaries
 cne_alpha = 0.1
-gsk_cne = gsk_flat
-gsk_mc = gsk_flat
+gsk_cne = gsk_flat_unit
+gsk_mc = gsk_flat_unit
 frm = 0.2
 include_cb_lines = true
 include("cne_selection.jl")

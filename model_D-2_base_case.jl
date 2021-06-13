@@ -58,8 +58,8 @@ for horizon in 1:ceil(Int, length(T)/hours_per_horizon)
 	println("Net positions within FBMC.")
 
 # Eq. (9q)
-	@constraint(m, no_trade_base_case_FBMC[t=Tsub, z=Z_FBMC], NP[t,z] == 0)
-	println("No trade condition (within FBMC).")
+		@constraint(m, no_trade_base_case_FBMC[t=Tsub, z=Z_FBMC], NP[t,z] == 0)
+		println("No trade condition (within FBMC).")
 
 # Eq. (9m)
 	@constraint(m, nodal_injection[t=Tsub, n=N],
